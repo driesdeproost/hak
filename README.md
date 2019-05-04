@@ -1,7 +1,7 @@
 # Hak
+A Spring boot application that downloads and splits full albums from youtube and writes it to a mountable folder.
 
-This is a project that builds a spring boot application that downloads
-and splits full albums from youtube and writes it to a mountable folder.
+Be careful where you deploy this for now, as it currently calls the shell where it runs.
 
 ### Building
 
@@ -12,7 +12,6 @@ example in a docker-compose file.
 An example docker-compose file can be found in `/src/main/docker/`.
 
 ###### jar
-
 If you just want the spring boot runnable jar, execute the `bootJar`
 gradle task. This will create the jar in `/build/libs/`.
 
