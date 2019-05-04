@@ -1,0 +1,42 @@
+plugins {
+	id 'org.springframework.boot' version '2.1.4.RELEASE'
+	id 'java'
+	id 'com.bmuschko.docker-spring-boot-application' version '4.8.0'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.dominane'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation('org.springframework.boot:spring-boot-starter-web')
+	compile group: 'io.swagger', name: 'swagger-annotations', version: '1.5.15'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	compileOnly('org.projectlombok:lombok')
+	annotationProcessor ('org.projectlombok:lombok')
+}
+
+dockerCreateDockerfile {
+	instruction 'RUN apk add --update ' +
+			'bash ' +
+			'ffmpeg ' +
+			'openjdk8 ' +
+			'python-dev ' +
+			'py-pip ' +
+			'build-base ' +
+			'&& pip install --upgrade youtube-dl'
+}
+
+docker {
+	springBootApplication {
+		baseImage = 'openjdk:8-alpine'
+		ports = [8080]
+	}
+}

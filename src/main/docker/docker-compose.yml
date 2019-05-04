@@ -1,0 +1,9 @@
+version: '2.2'
+
+services:
+  yt-download:
+    image: com.dominane/hak:0.0.1-snapshot
+    ports:
+      - 8081:8080
+    volumes:
+      - /tmp/mounted/:/tmp/mounted/
