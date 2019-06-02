@@ -1,16 +1,15 @@
 package com.dominane.hak.components.impl;
 
-import com.dominane.hak.components.ServiceController;
 import com.dominane.hak.data.DownloadConfig;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,17 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/albumdownload/")
 @Api(description = "Endpoint to request a download and split of the full album on yt")
-public class ServiceControllerImpl implements ServiceController {
+public class DownloadServiceController {
     private static final int ID_LENGTH = 11;
     private static final String TIME_FAR_AWAY = "99:59:59";
 
-    @RequestMapping(method = RequestMethod.POST, value="download" /*, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}*/)
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "emailInfo", value = "Description of the download attributes data", required = true,
-                    paramType = "application:json", type = "string"),
-    })
+    @RequestMapping(method = RequestMethod.POST, value="download")
     @ApiOperation("Download video in parts")
-    @Override public void download( @RequestBody DownloadConfig downloadConfig)  {
+    public void download(@RequestBody DownloadConfig downloadConfig)  {
         log.info(downloadConfig.toString());
         try {
             for (ArrayList<String> command: downloadExecutionList(downloadConfig)){
@@ -79,7 +74,7 @@ public class ServiceControllerImpl implements ServiceController {
                     trackInfo.get(i).get(0),
                     trackInfo.get(i+1).get(0),
                     input,
-                    Paths.get(outputFolderName, trackInfo.get(i).get(1)).toString())
+                    Paths.get(StringUtils.uriDecode(outputFolderName, Charset.defaultCharset()), trackInfo.get(i).get(1)).toString())
                     )
             );
         }

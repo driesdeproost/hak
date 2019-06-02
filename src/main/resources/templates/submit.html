@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Hak: Submitted</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link th:href='@{/css/style.css}' rel='stylesheet' />
+</head>
+<body>
+<!--TODO HAK-6 HAK-7 parameterize path further-->
+<p th:text="'Your files will be available at /tmp/mounted/' + ${downloadConfig.album} + ' - ' +  ${downloadConfig.album} + ' soon'"/>
+<p th:text="'submitted download configuration: '"/>
+<p th:text="'url: ' + ${downloadConfig.url}" />
+<p th:text="'artist: ' + ${downloadConfig.artist}" />
+<p th:text="'album: ' + ${downloadConfig.album}" />
+<p th:text="'trackInfoString: ' + ${downloadConfig.trackInfoString}" />
+<a href="/">Download another full album</a>
+</body>
+</html>
