@@ -49,7 +49,6 @@ You can also use the example web interface at port 8080.
 ###### Jar/bootrun
 
 You can just run the java jar or run the gradle bootrun task. This will expose all endpoints on port 8080 by default.
-`
 
 ### Contribution
 
