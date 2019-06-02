@@ -39,11 +39,17 @@ An example request looks like this:
         00:30:32 - Stöðvar,
         00:34:46 - Góða Nótt"
 }'
--H "Content-Type: application/json"
-`
+-H "Content-Type: application/json"`
 
 After the service has processed the request, the songs should be
 available in your `/tmp/mounted/` folder by default.
+
+You can also use the example web interface at port 8080.
+
+###### Jar/bootrun
+
+You can just run the java jar or run the gradle bootrun task. This will expose all endpoints on port 8080 by default.
+`
 
 ### Contribution
 
