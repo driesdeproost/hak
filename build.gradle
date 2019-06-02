@@ -17,6 +17,7 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation('org.springframework.boot:spring-boot-starter-web')
+	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 	compile group: 'io.swagger', name: 'swagger-annotations', version: '1.5.15'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	compileOnly('org.projectlombok:lombok')

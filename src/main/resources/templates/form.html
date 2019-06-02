@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Hak</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link th:href='@{/css/style.css}' rel='stylesheet' />
+</head>
+<body>
+<h1>Hak, download full albums from Youtube, split into tracks </h1>
+<form action="#" th:action="@{/}" th:object="${downloadConfig}" method="post">
+    <p>url: <input type="text" th:field="*{url}" /></p>
+    <p>artist: <input type="text" th:field="*{artist}" /></p>
+    <p>album: <input type="text" th:field="*{album}" /></p>
+    <p>trackInfoString: <textarea type="text" th:field="*{trackInfoString}" /></p>
+    <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
+</form>
+</body>
+</html>
