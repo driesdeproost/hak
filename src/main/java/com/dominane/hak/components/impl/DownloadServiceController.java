@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/albumdownload/")
 @Api(description = "Endpoint to request a download and split of the full album on yt")
 public class DownloadServiceController {
-    private static final int ID_LENGTH = 11;
     private static final String TIME_FAR_AWAY = "99:59:59";
 
     @RequestMapping(method = RequestMethod.POST, value="download")
@@ -41,21 +40,24 @@ public class DownloadServiceController {
 
     private ArrayList<ArrayList<String>> downloadExecutionList(DownloadConfig downloadConfig) {
         String url = downloadConfig.getUrl();
-        String id = url.substring(url.length()-ID_LENGTH);
-        String folderName = escapeSpaces(downloadConfig.getArtist() + " - " + downloadConfig.getAlbum());
+        String id = downloadConfig.getId();
+        String folderName = escapeSpecialChars(downloadConfig.getArtist() + " - " + downloadConfig.getAlbum());
 
         ArrayList<ArrayList<String>> toExecute = new ArrayList<>();
         toExecute.add(makeBashCommand(youtubeDLDownloadCommand(url,id)));
         toExecute.add(makeBashCommand("mkdir -p " + folderName));
-        toExecute.addAll(splitCommandsList(downloadConfig.getTrackInfo(),id,folderName));
+        toExecute.addAll(splitCommandsList(downloadConfig,folderName));
         toExecute.add(makeBashCommand("rm " + id));
-        toExecute.add(makeBashCommand("mv -n " + folderName + " /tmp/mounted/"));
+        toExecute.add(makeBashCommand("mv -n '" + folderName + "' /tmp/mounted/"));
         toExecute.add(makeBashCommand("echo \"succesfully downloaded: " + downloadConfig.getAlbum() + "\" >> log"));
         return toExecute;
     }
 
-    private String escapeSpaces(String in) {
-        return in.replace(" ", "\\ ");
+    private String escapeSpecialChars(String in) {
+        //TODO improvement: write regex or use library
+        return in
+                .replace(" ", "\\ ")
+                .replace("&","\\&");
     }
 
     private ArrayList<String> makeBashCommand(String command) {
@@ -65,25 +67,37 @@ public class DownloadServiceController {
                 "cd /tmp/ && " + command));
     }
 
-    private ArrayList<ArrayList<String>> splitCommandsList(ArrayList<ArrayList<String>> trackInfo, String input, String outputFolderName) {
+    private ArrayList<ArrayList<String>> splitCommandsList(DownloadConfig config, String outputFolderName) {
         ArrayList<ArrayList<String>> splitCommands = new ArrayList<>();
+        ArrayList<ArrayList<String>> trackInfo = config.getTrackInfo();
 
         int lastIndex = trackInfo.size()-1;
         for (int i = 0; i < lastIndex; i++) {
+            ArrayList<String> currentTrackInfo = trackInfo.get(i);
+            ArrayList<String> nextTrackInfo = trackInfo.get(i+1);
+
             splitCommands.add(makeBashCommand(ffmpegSplitCommand(
-                    trackInfo.get(i).get(0),
-                    trackInfo.get(i+1).get(0),
-                    input,
-                    Paths.get(StringUtils.uriDecode(outputFolderName, Charset.defaultCharset()), trackInfo.get(i).get(1)).toString())
+                    currentTrackInfo.get(0),
+                    nextTrackInfo.get(0),
+                    config.getId(),
+                    outputFolderName,
+                    config.getArtist(),
+                    config.getAlbum(),
+                    currentTrackInfo.get(1),
+                    String.valueOf(i+1))
                     )
             );
         }
         splitCommands.add(makeBashCommand(ffmpegSplitCommand(
                 trackInfo.get(lastIndex).get(0),
                 TIME_FAR_AWAY,
-                input,
-                Paths.get(outputFolderName, trackInfo.get(lastIndex).get(1)).toString())
-                )
+                config.getId(),
+                outputFolderName,
+                config.getArtist(),
+                config.getAlbum(),
+                trackInfo.get(lastIndex).get(1),
+                String.valueOf(lastIndex+1)
+                ))
         );
         return splitCommands;
     }
@@ -95,9 +109,14 @@ public class DownloadServiceController {
                 + ">> log";
     }
 
-    private String ffmpegSplitCommand(String from, String to, String input, String output) {
+    private String ffmpegSplitCommand(String from, String to, String input, String outputFolder, String artist, String album, String title, String trackNumber) {
+        String output = Paths.get(StringUtils.uriDecode(outputFolder, Charset.defaultCharset()), escapeSpecialChars(title)).toString();
         return "ffmpeg "
                 + "-i " + input + ".mp3 "
+                + "-metadata artist=\"" + artist + "\" "
+                + "-metadata album=\"" + album + "\" "
+                + "-metadata title=\"" + title + "\" "
+                + "-metadata track=\"" + trackNumber + "\" "
                 + "-ss " + from + " "
                 + "-to " + to + " "
                 + output + ".mp3";

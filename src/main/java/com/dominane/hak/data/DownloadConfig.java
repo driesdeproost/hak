@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DownloadConfig {
 
+    private static final int ID_LENGTH = 11;
+
     private String url;
     private String artist;
     private String album;
@@ -25,6 +27,10 @@ public class DownloadConfig {
         return trackInfosDivided;
     }
 
+    public String getId(){
+        return url.substring(url.length()-ID_LENGTH);
+    }
+
     public String toString() {
         return "Download for: \n" +
                 "Url: " + getUrl() + "\n" +
@@ -32,5 +38,6 @@ public class DownloadConfig {
                 "Album name: " + getAlbum() + "\n" +
                 "Tracks: " + getTrackInfoString();
     }
+
 
 }
