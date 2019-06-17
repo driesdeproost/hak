@@ -11,7 +11,8 @@
     <p>url: <input type="text" th:field="*{url}" /></p>
     <p>artist: <input type="text" th:field="*{artist}" /></p>
     <p>album: <input type="text" th:field="*{album}" /></p>
-    <p>trackInfoString: <textarea type="text" th:field="*{trackInfoString}" /></p>
+    <p>trackInfoString: <textarea type="th:utext" th:field="*{trackInfoString}"></textarea></p>
+    <p>startFirst: <input type="checkbox" th:field="*{startFirst}"/></p>
     <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
 </form>
 </body>

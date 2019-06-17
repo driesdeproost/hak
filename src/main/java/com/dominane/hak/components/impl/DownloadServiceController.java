@@ -1,6 +1,7 @@
 package com.dominane.hak.components.impl;
 
 import com.dominane.hak.data.DownloadConfig;
+import com.dominane.hak.data.trackinfo.TrackInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
@@ -53,10 +54,33 @@ public class DownloadServiceController {
         return toExecute;
     }
 
+    private ArrayList<ArrayList<String>> splitCommandsList(DownloadConfig config, String outputFolderName) {
+        ArrayList<ArrayList<String>> splitCommands = new ArrayList<>();
+
+        ArrayList<TrackInfo> trackInfoList = config.getTrackInfos();
+
+        for (TrackInfo trackInfo : trackInfoList) {
+            splitCommands.add(makeBashCommand(ffmpegSplitCommand(
+                    trackInfo.getStart(),
+                    trackInfo.getEnd(),
+                    config.getId(),
+                    outputFolderName,
+                    config.getArtist(),
+                    config.getAlbum(),
+                    trackInfo.getTitle(),
+                    trackInfo.getTrackNumber()
+            )));
+        }
+
+        return splitCommands;
+    }
+
     private String escapeSpecialChars(String in) {
         //TODO improvement: write regex or use library
         return in
                 .replace(" ", "\\ ")
+                .replace("(", "\\(")
+                .replace(")", "\\)")
                 .replace("&","\\&");
     }
 
@@ -65,41 +89,6 @@ public class DownloadServiceController {
                 "bash",
                 "-c",
                 "cd /tmp/ && " + command));
-    }
-
-    private ArrayList<ArrayList<String>> splitCommandsList(DownloadConfig config, String outputFolderName) {
-        ArrayList<ArrayList<String>> splitCommands = new ArrayList<>();
-        ArrayList<ArrayList<String>> trackInfo = config.getTrackInfo();
-
-        int lastIndex = trackInfo.size()-1;
-        for (int i = 0; i < lastIndex; i++) {
-            ArrayList<String> currentTrackInfo = trackInfo.get(i);
-            ArrayList<String> nextTrackInfo = trackInfo.get(i+1);
-
-            splitCommands.add(makeBashCommand(ffmpegSplitCommand(
-                    currentTrackInfo.get(0),
-                    nextTrackInfo.get(0),
-                    config.getId(),
-                    outputFolderName,
-                    config.getArtist(),
-                    config.getAlbum(),
-                    currentTrackInfo.get(1),
-                    String.valueOf(i+1))
-                    )
-            );
-        }
-        splitCommands.add(makeBashCommand(ffmpegSplitCommand(
-                trackInfo.get(lastIndex).get(0),
-                TIME_FAR_AWAY,
-                config.getId(),
-                outputFolderName,
-                config.getArtist(),
-                config.getAlbum(),
-                trackInfo.get(lastIndex).get(1),
-                String.valueOf(lastIndex+1)
-                ))
-        );
-        return splitCommands;
     }
 
     private String youtubeDLDownloadCommand(String url, String output) {
@@ -121,7 +110,5 @@ public class DownloadServiceController {
                 + "-to " + to + " "
                 + output + ".mp3";
     }
-
-
 
 }

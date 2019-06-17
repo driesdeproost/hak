@@ -1,7 +1,9 @@
 package com.dominane.hak.data;
 
+import com.dominane.hak.data.trackinfo.TrackInfo;
+import com.dominane.hak.data.trackinfo.parsers.CrisbalStyleParser;
+import com.dominane.hak.data.trackinfo.parsers.TrackInfoParser;
 import java.util.ArrayList;
-import java.util.Arrays;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,16 +17,18 @@ public class DownloadConfig {
     private String artist;
     private String album;
     private String trackInfoString;
+    private boolean startFirst;
 
-    public ArrayList<ArrayList<String>> getTrackInfo() {
-        ArrayList<String> trackInfos = new ArrayList<>(Arrays.asList(getTrackInfoString().split(", ")));
-        log.info(trackInfos.toString());
-        ArrayList<ArrayList<String>> trackInfosDivided = new ArrayList<>();
-        for (int i = 0; i < trackInfos.size(); i++) {
-            String pair = trackInfos.get(i);
-            trackInfosDivided.add(new ArrayList<>(Arrays.asList(pair.split(" - "))));
-        }
-        return trackInfosDivided;
+    //TODO make list of parsers to pick from
+    private static final CrisbalStyleParser defaultParser = new CrisbalStyleParser(" - ", false);
+    private static final CrisbalStyleParser reverseDefaultParser = new CrisbalStyleParser(" - ", true);
+
+    public ArrayList<TrackInfo> getTrackInfos() {
+        return getParser().parse(trackInfoString);
+    }
+
+    private TrackInfoParser getParser(){
+        return isStartFirst()? reverseDefaultParser : defaultParser;
     }
 
     public String getId(){
@@ -36,8 +40,8 @@ public class DownloadConfig {
                 "Url: " + getUrl() + "\n" +
                 "Artist: " + getArtist() + "\n" +
                 "Album name: " + getAlbum() + "\n" +
-                "Tracks: " + getTrackInfoString();
+                "Tracks: " + getTrackInfoString() + "\n" +
+                "StartFirst: " + isStartFirst();
     }
-
 
 }
