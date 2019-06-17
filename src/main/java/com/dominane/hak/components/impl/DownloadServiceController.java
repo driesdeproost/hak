@@ -49,7 +49,7 @@ public class DownloadServiceController {
         toExecute.add(makeBashCommand("mkdir -p " + folderName));
         toExecute.addAll(splitCommandsList(downloadConfig,folderName));
         toExecute.add(makeBashCommand("rm " + id));
-        toExecute.add(makeBashCommand("mv -n '" + folderName + "' /tmp/mounted/"));
+        toExecute.add(makeBashCommand("mv -n " + folderName + " /tmp/mounted/"));
         toExecute.add(makeBashCommand("echo \"succesfully downloaded: " + downloadConfig.getAlbum() + "\" >> log"));
         return toExecute;
     }
