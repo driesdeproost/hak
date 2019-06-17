@@ -7,7 +7,7 @@
 </head>
 <body>
 <!--TODO HAK-6 HAK-7 parameterize path further-->
-<p th:text="'Your files will be available at /tmp/mounted/' + ${downloadConfig.album} + ' - ' +  ${downloadConfig.album} + ' soon'"/>
+<p th:text="'Your files will be available at /tmp/mounted/' + ${downloadConfig.artist} + ' - ' +  ${downloadConfig.album} + ' soon'"/>
 <p th:text="'submitted download configuration: '"/>
 <p th:text="'url: ' + ${downloadConfig.url}" />
 <p th:text="'artist: ' + ${downloadConfig.artist}" />

@@ -29,26 +29,27 @@ An example request looks like this:
     "url":"https://www.youtube.com/watch?v=JI5Nxc8yUzA",
     "artist":"SerpentSound Studios",
     "album":"Fjörður",
+    "startFirst": "false",
     "trackInfoString":
-       "00:00:00 - Grundar,
-        00:04:32 - Vopna,
-        00:12:08 - Norður,
-        00:15:53 - Borgar,
-        00:21:28 - Skaga,
-        00:27:03 - Mjói,
-        00:30:32 - Stöðvar,
-        00:34:46 - Góða Nótt"
+       "Grundar - 00:00:00\n
+        Vopna - 00:04:32\n
+        Norður - 00:12:08\n
+        Borgar - 00:15:53\n
+        Skaga 00:21:28\n
+        Mjói - 00:27:03\n
+        Stöðvar - 00:30:32\n
+        Góða Nótt - 00:34:46"
 }'
 -H "Content-Type: application/json"`
 
 After the service has processed the request, the songs should be
-available in your `/tmp/mounted/` folder by default.
+available in your `/media/music/Dropfolder/` folder on your machine by default.
 
-You can also use the example web interface at port 8080.
+**You can also use the example web interface at port 8081.**
 
 ###### Jar/bootrun
 
-You can just run the java jar or run the gradle bootrun task. This will expose all endpoints on port 8080 by default.
+If you have youtube-dl and ffmpeg on your machine, you can just run the java jar or run the gradle bootrun task. This will expose all endpoints, as well as the web interface on port 8080 by default.
 
 ### Contribution
 
