@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -75,13 +76,8 @@ public class DownloadServiceController {
         return splitCommands;
     }
 
-    private String escapeSpecialChars(String in) {
-        //TODO improvement: write regex or use library
-        return in
-                .replace(" ", "\\ ")
-                .replace("(", "\\(")
-                .replace(")", "\\)")
-                .replace("&","\\&");
+    static String escapeSpecialChars(String in) {
+        return StringEscapeUtils.escapeXSI(in);
     }
 
     private ArrayList<String> makeBashCommand(String command) {
