@@ -29,7 +29,10 @@ public class DownloadServiceController {
     public void download(@RequestBody DownloadConfig downloadConfig)  {
         log.info(downloadConfig.toString());
         try {
-            for (ArrayList<String> command: downloadExecutionList(downloadConfig)){
+            ArrayList<ArrayList<String>> commands = downloadConfig.isUseChapters() ?
+                    downloadExecutionListChapters(downloadConfig):
+                    downloadExecutionListNoChapters(downloadConfig);
+            for (ArrayList<String> command: commands){
                 log.info(command.toString());
                 new ProcessBuilder(command).start().waitFor();
             }
@@ -40,17 +43,30 @@ public class DownloadServiceController {
         }
     }
 
-    private ArrayList<ArrayList<String>> downloadExecutionList(DownloadConfig downloadConfig) {
+    private ArrayList<ArrayList<String>> downloadExecutionListNoChapters(DownloadConfig downloadConfig) {
         String url = downloadConfig.getUrl();
         String id = downloadConfig.getId();
         String folderName = escapeSpecialChars(downloadConfig.getArtist() + " - " + downloadConfig.getAlbum());
 
         ArrayList<ArrayList<String>> toExecute = new ArrayList<>();
-        toExecute.add(makeBashCommand(youtubeDLDownloadCommand(url,id)));
+        toExecute.add(makeBashCommand(YtDlpNoChapters(url,id)));
         toExecute.add(makeBashCommand("mkdir -p " + folderName));
         toExecute.addAll(splitCommandsList(downloadConfig,folderName));
         toExecute.add(makeBashCommand("rm " + id));
         toExecute.add(makeBashCommand("mv -n " + folderName + " /tmp/mounted/"));
+        toExecute.add(makeBashCommand("echo \"succesfully downloaded: " + downloadConfig.getAlbum() + "\" >> log"));
+        return toExecute;
+    }
+
+    // TODO add tags
+    private ArrayList<ArrayList<String>> downloadExecutionListChapters(DownloadConfig downloadConfig) {
+        String url = downloadConfig.getUrl();
+        String folderName = downloadConfig.getArtist() + " - " + downloadConfig.getAlbum();
+        String escapedFolderName = escapeSpecialChars(folderName);
+
+        ArrayList<ArrayList<String>> toExecute = new ArrayList<>();
+        toExecute.add(makeBashCommand(YtDlpChapters(url,folderName)));
+        toExecute.add(makeBashCommand("mv -n " + escapedFolderName + " /tmp/mounted/"));
         toExecute.add(makeBashCommand("echo \"succesfully downloaded: " + downloadConfig.getAlbum() + "\" >> log"));
         return toExecute;
     }
@@ -87,10 +103,18 @@ public class DownloadServiceController {
                 "cd /tmp/ && " + command));
     }
 
-    private String youtubeDLDownloadCommand(String url, String output) {
-        return "youtube-dl "
+    private String YtDlpNoChapters(String url, String output) {
+        return "yt-dlp "
                 + "-o " + output + ".mp3 "
                 + "-x --audio-format mp3 " + url + " "
+                + ">> log";
+    }
+
+    private String YtDlpChapters(String url, String folder) {
+        return "yt-dlp "
+                + "--split-chapters "
+                + "-x --audio-format mp3 " + url + " "
+                + "-o \"chapter:" + folder + "/%(section_title)s.%(ext)s\""
                 + ">> log";
     }
 

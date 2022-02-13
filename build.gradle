@@ -30,15 +30,12 @@ dockerCreateDockerfile {
 			'bash ' +
 			'ffmpeg ' +
 			'openjdk8 ' +
-			'python-dev ' +
-			'py-pip ' +
-			'build-base ' +
-			'&& pip install --upgrade youtube-dl'
+			'yt-dlp '
 }
 
 docker {
 	springBootApplication {
-		baseImage = 'openjdk:8-alpine'
+		baseImage = 'openjdk:19-jdk-alpine3.15'
 		ports = [8080]
 	}
 }

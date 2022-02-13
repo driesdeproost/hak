@@ -18,6 +18,7 @@ public class DownloadConfig {
     private String album;
     private String trackInfoString;
     private boolean startFirst;
+    private boolean useChapters = true;
 
     //TODO make list of parsers to pick from
     private static final CrisbalStyleParser defaultParser = new CrisbalStyleParser(" - ", false);
